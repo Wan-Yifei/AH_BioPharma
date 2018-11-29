@@ -1,0 +1,121 @@
+---
+title: "Clustering analysis"
+author: "Yifei Wan"
+date: "November 27, 2018"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r, echo=FALSE}
+#1 .Input data
+library(factoextra)
+#setwd('c:/users/yifei.wan/Desktop')
+count_genus_raw <- read.csv('Genus_Level_Aggregate_Counts.csv', header = T, row.names = 1)
+count_genus_t <- t(count_genus_raw) ## transpose matrix
+```
+
+# 1. Normalize data
+
+The raw count would be normalized by t-statistic and feature scaling method respectively as `count_nor.z` and `count_nor.s`.
+
+```{r, echo=F}
+count_nor.z <- scale(count_genus_t)
+count_nor.s <- apply(count_genus_t, 2, function(count){(count - min(count, na.rm = T)) / (max(count, na.rm = T) - min(count, na.rm = T))})
+```
+
+
+# 2. Assessing Clustering Tendency
+
+## 2.1 Hopkins statistic
+Apply Hopkins statistic to evaluate the clustering tendency of count data. A value close to 0 tends to indicate the data is highly clustered, while uniformly randomly distributed points will tend to result in values around 0.5.
+
+```{r, echo=F}
+hopkins_stat.z <- get_clust_tendency(count_nor.z, n = nrow(count_nor.z)-1, graph = F)
+hopkins_stat.s <- get_clust_tendency(count_nor.s, n = nrow(count_nor.s)-1, graph = F)
+```
+
++ Hopkins statistic based on t-statistic normalization
+```{r, echo=F}
+hopkins_stat.z$hopkins_stat
+```
+
++ Hopkins statistic based on feature scaling normalization
+```{r, echo=F}
+hopkins_stat.s$hopkins_stat
+```
+
+Two values are close to 0.5 which implies that data points (samples) uniformly randomly distributed somehow. They may not be clusterable. 
+
+## 2.2 Dissimilarity matrix
+
+Visualize the distance matrix to review the dissimilarity within dataset. If data points are clusterable, the matrix would display somewhat clutering pattern.
+
++ Dissimilarity matrix based on t-statistic normalization
+
+Low value indicate high similarity.
+
+
+```{r, echo = F}
+fviz_dist(dist(count_nor.z), order = TRUE, show_labels = TRUE, lab_size = NULL,
+        gradient = list(low = "red", high = "white"))
+```
+
+
+
+
++ Dissimilarity matrix based on feature scaling normalization
+
+```{r, echo=F}
+fviz_dist(dist(count_nor.s), order = TRUE, show_labels = TRUE, lab_size = NULL,
+          gradient = list(low = "red", high = "white"))
+```
+
+Both images don't appear any remarkable clustering patterns.
+
+
+# 3. PCA analysis
+
+Apply PCA to reduce the dimensions and analyze pattern of dataset.
+
++ PCA based on t-statistic normalization
+
+```{r, echo=F}
+fviz_pca_ind(prcomp(count_nor.z), title = "PCA : Genus-level with t-statistic normaliztion", 
+             palette = "jco", habillage = rep(c('Treatment', 'Control'), 5),
+             geom = "point", ggtheme = theme_classic(),
+             legend = "bottom", label='all')
+```
+
+
+
++ PCA based on feature scaling normalization
+```{r, echo=F}
+fviz_pca_ind(prcomp(count_nor.s), title = "PCA : Genus-level with t-statistic normaliztion", 
+             palette = "jco", habillage = rep(c('Treatment', 'Control'), 5),
+             geom = "point", ggtheme = theme_classic(),
+             legend = "bottom", label='all')
+```
+
+About PCA result implies that there is no linear boundary between two groups.
+
+
+# 4. Clustering
+
+```{r, echo=F}
+cluster.z <- kmeans(count_nor.z, centers = 2, iter.max = 1e6)
+cluster.s <- kmeans(count_nor.s, centers = 2, iter.max = 1e6)
+fviz_cluster(list(data = count_nor.z, cluster = cluster.z$cluster),habillage = rep(c('Treatment', 'Control'), 
+             ellipse.type = "norm", geom = "point", stand = FALSE, palette = "jco", ggtheme = theme_classic(), label = 'all'))
+fviz_cluster(list(data = count_nor.s, cluster = cluster.s$cluster),habillage = rep(c('Treatment', 'Control'), 
+             ellipse.type = "norm", geom = "point", stand = FALSE, palette = "jco", ggtheme = theme_classic(), label = 'all'))             
+```
+
+
+# 5. Conclusion
+
+The genus level count data is not clusterable.
