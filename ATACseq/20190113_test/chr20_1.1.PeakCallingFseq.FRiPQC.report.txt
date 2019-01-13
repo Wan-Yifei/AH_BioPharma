@@ -1,0 +1,2 @@
+peakReads	totalReads	totalPeaks	FRiP
+3799	7501	1042	0.506465804559392

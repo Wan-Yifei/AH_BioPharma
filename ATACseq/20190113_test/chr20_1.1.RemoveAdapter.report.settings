@@ -1,0 +1,94 @@
+AdapterRemoval ver. 2.2.1a
+Trimming of paired-end reads
+
+
+[Adapter sequences]
+Adapter1[1]: CTGTCTCTTATACACATCTCCGAGCCCACANNNCATANG
+Adapter2[1]: CTGTCTCTTATACACATCTGACGCTNTTGTCCTTCAAAG
+
+
+[Adapter trimming]
+RNG seed: NA
+Alignment shift value: 2
+Global mismatch threshold: 0.333333
+Quality format (input): Phred+33
+Quality score max (input): 41
+Quality format (output): Phred+33
+Quality score max (output): 41
+Mate-number separator (input): '/'
+Trimming Ns: No
+Trimming Phred scores <= 2: No
+Trimming using sliding windows: No
+Minimum genomic length: 15
+Maximum genomic length: 4294967295
+Collapse overlapping reads: No
+Minimum overlap (in case of collapse): 11
+
+
+[Trimming statistics]
+Total number of read pairs: 25000
+Number of unaligned read pairs: 13581
+Number of well aligned read pairs: 11419
+Number of discarded mate 1 reads: 0
+Number of singleton mate 1 reads: 0
+Number of discarded mate 2 reads: 0
+Number of singleton mate 2 reads: 0
+Number of reads with adapters[1]: 5906
+Number of retained reads: 50000
+Number of retained nucleotides: 2451360
+Average length of retained reads: 49.0272
+
+
+[Length distribution]
+Length	Mate1	Mate2	Singleton	Discarded	All
+0	0	0	0	0	0
+1	0	0	0	0	0
+2	0	0	0	0	0
+3	0	0	0	0	0
+4	0	0	0	0	0
+5	0	0	0	0	0
+6	0	0	0	0	0
+7	0	0	0	0	0
+8	0	0	0	0	0
+9	0	0	0	0	0
+10	0	0	0	0	0
+11	0	0	0	0	0
+12	0	0	0	0	0
+13	0	0	0	0	0
+14	0	0	0	0	0
+15	0	0	0	0	0
+16	0	0	0	0	0
+17	0	0	0	0	0
+18	0	0	0	0	0
+19	0	0	0	0	0
+20	0	0	0	0	0
+21	1	1	0	0	2
+22	0	0	0	0	0
+23	2	2	0	0	4
+24	0	0	0	0	0
+25	1	1	0	0	2
+26	20	20	0	0	40
+27	21	21	0	0	42
+28	14	14	0	0	28
+29	24	24	0	0	48
+30	22	22	0	0	44
+31	22	22	0	0	44
+32	23	23	0	0	46
+33	31	31	0	0	62
+34	33	33	0	0	66
+35	54	54	0	0	108
+36	104	104	0	0	208
+37	114	114	0	0	228
+38	120	120	0	0	240
+39	186	186	0	0	372
+40	202	202	0	0	404
+41	275	275	0	0	550
+42	285	285	0	0	570
+43	239	239	0	0	478
+44	254	254	0	0	508
+45	228	228	0	0	456
+46	207	207	0	0	414
+47	154	154	0	0	308
+48	157	157	0	0	314
+49	160	160	0	0	320
+50	22047	22047	0	0	44094

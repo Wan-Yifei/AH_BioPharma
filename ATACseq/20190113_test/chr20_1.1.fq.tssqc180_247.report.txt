@@ -1,0 +1,3 @@
+totalUniqReads	4480
+TSSReads	487
+TSSRate	0.108705357142857
