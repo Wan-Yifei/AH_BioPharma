@@ -1,0 +1,11 @@
+Sample	file	condition
+1710D-12-01	1710D-12-01.txt	control
+1710D-12-02	1710D-12-02.txt	treatment
+1710D-12-03	1710D-12-03.txt	control
+1710D-12-04	1710D-12-04.txt	treatment
+1710D-12-05	1710D-12-05.txt	control
+1710D-12-06	1710D-12-06.txt	treatment
+1710D-12-07	1710D-12-07.txt	control
+1710D-12-08	1710D-12-08.txt	treatment
+1710D-12-09	1710D-12-09.txt	control
+1710D-12-10	1710D-12-10.txt	treatment
