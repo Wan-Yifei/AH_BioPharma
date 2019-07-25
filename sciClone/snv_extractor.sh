@@ -14,6 +14,6 @@ do
     name=${file%%.vcf}
     echo -------------------------------
     echo Extract content from $name!
-    grep -v '#' $p | awk 'BEGIN {OFS="\t"} { print $1,$2,$10}' | awk -F"[\t:,]" 'BEGIN {OFS="\t"} {print $1, $2, $4, $5, $6}' | sed 's/%//g' | sed 's/chr//g' > ${output}/${name}_snv.txt
+    grep -v '#' $p | awk 'BEGIN {OFS="\t"} { print $1,$2,$10}' | awk -F"[\t:,]" 'BEGIN {OFS="\t"} {print $1, $2, $4, $5, $6*100}' | sed 's/%//g' | sed 's/chr//g' > ${output}/${name}_snv.txt
 done
 
