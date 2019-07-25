@@ -3,7 +3,7 @@ set -e
 
 RUN_FOLDER=$1
 
-for re in $RUN_FOLDER/g*_B/Report.html;
+for re in $RUN_FOLDER/*Report*.html;
 do
 echo $re
 	sed -i 's/Zheng Wei and Wei Zhang/Admera Health/g' $re 
