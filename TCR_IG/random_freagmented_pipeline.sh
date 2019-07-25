@@ -3,12 +3,13 @@
 
 set -e
 
-input=$1 ## folder of input fastq file
+input=$1 ## the complete path of the folder of input fastq file
 output=$2 ## result
 
 check_folder(){
     if [[ -d ${output}/${prefix} ]]
     then
+        echo ====================================
         echo ------------------------------------
         echo Output folder: $prefix present!
         echo ------------------------------------
@@ -20,6 +21,16 @@ check_folder(){
     fi
 }
 
+
+for fq in ${input}/*R1*.fastq.gz
+do
+    file=$(basename $fq)
+    name=${file%%_R1_001.fastq.gz}
+    prefix=${name%%_L001}
+    fq2=${input}/${name}_R2_001.fastq.gz
+    check_folder
+done 
+
 for fq in ${input}/*R1*.fastq.gz
 do
     file=$(basename $fq)
@@ -27,11 +38,12 @@ do
     prefix=${name%%_L001}
     fq2=${input}/${name}_R2_001.fastq.gz
     echo ====================================
+    echo ====================================
     echo Input FASTQ files:
     echo $fq
     echo $fq2
-    check_folder
     cd ${output}/${prefix}
+    echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     /home/yifei.wan/.linuxbrew/bin/mixcr analyze shotgun \
             --species hsa \
             --starting-material dna \
