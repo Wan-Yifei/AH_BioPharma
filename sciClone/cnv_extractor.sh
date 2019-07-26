@@ -13,6 +13,6 @@ do
     name=${file%%.tsv}
     echo -------------------------------
     echo Extract content from $name!
-    awk -F"\t" 'BEGIN{OFS="\t"} /chrom/{next}{print $1, $2, $3, $4}' $p | sed 's/%//g' | sed 's/chr//g' > ${output}/${name}_cnv.txt 
+    awk -F"\t" 'BEGIN{OFS="\t"} /chrom/{next}{print $1, $2, $3, 2*(2**$4)}' $p | sed 's/%//g' | sed 's/chr//g' > ${output}/${name}_cnv.txt 
 done
 
