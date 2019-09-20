@@ -1,0 +1,3 @@
+Sample	file	condition
+19068XD-01-01	1710D-12-01.txt	control
+19068XD-01-02	1710D-12-02.txt	treatment
