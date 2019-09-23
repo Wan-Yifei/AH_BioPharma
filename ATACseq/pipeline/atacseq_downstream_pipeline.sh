@@ -1,6 +1,8 @@
 # Process ATAC-seq data based on esATAC result
 # author: Yifei Wan
 
+set -e
+
 input=$1 ## the esATAC run folder
 meta=$2
 
@@ -27,12 +29,12 @@ else
     echo The peakcalling folder exists.
 fi
 
-
 if [[ ! -d $1/count ]]
 then
     echo Make directory for count!
 else
     echo The count folder exists.
+fi
 
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo ">>>>>>>>>>>>> Downstream analysis <<<<<<<<<<<<<"
@@ -46,10 +48,10 @@ do
     for sample in $(ls $input/$group)
     do
         run_folder=($input/$group/$sample/esATAC_pipeline/intermediate_results) ## the intermediate folder
-        mv $run_folder/*.BedUtils.bed $input/util_beds
+        cp $run_folder/*.BedUtils.bed $input/util_beds
         file=$(basename $(ls $run_folder/*.sam))
         filename=${file%%.*}
-        samtools view -bs $run_folder/*.sam | samtools sort -@ 60 - $input/$bam_files/${filename}.sorted.bam ## covert sam to bam
+        samtools view -bSh $run_folder/*.sam | samtools sort -O bam -@ 60 -o $input/$bam_files/${filename}.sorted.bam ## covert sam to bam
     done
 done
 
@@ -80,4 +82,4 @@ bash /home/AH_Biopharma/ATACseq/pipeline/Count_format.sh $input/$peakcalling $in
 echo ">>>>>=========================================="
 echo DA analysis
 
-#Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i $input/count -d $input/DA_output 
+##Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i $input/count -d $input/DA_output 
