@@ -6,32 +6,34 @@ set -e
 input=$1 ## the esATAC run folder
 meta=$2
 
-if [[ ! -d $1/bam_files ]]
+if [[ ! -d $input/bam_files ]]
 then
     echo Make a directory for SAM/BAM files!
-    mkdir $1/bam_files 
+    mkdir $input/bam_files 
 else
     echo The bam_files folder exists.
 fi
 
-if [[ ! -d $1/util_beds ]]
+if [[ ! -d $input/util_beds ]]
 then
     echo Make a directory for util_bed files!
-    mkdir $1/util_beds
+    mkdir $input/util_beds
 else
     echo The util_bel folder exists.
 fi
 
-if [[ ! -d $1/peakcalling ]]
+if [[ ! -d $input/peakcalling ]]
 then
     echo Make directory for peakcalling!
+    mkdir $input/peakcalling
 else
     echo The peakcalling folder exists.
 fi
 
-if [[ ! -d $1/count ]]
+if [[ ! -d $input/count ]]
 then
     echo Make directory for count!
+    mkdir $input/count
 else
     echo The count folder exists.
 fi
@@ -39,19 +41,27 @@ fi
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo ">>>>>>>>>>>>> Downstream analysis <<<<<<<<<<<<<"
 echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
-
+echo
 echo ">>>>>=========================================="
 echo Covert SAM to BAM 
 for group in $(awk -F"\t" 'NR>1{print $3}' $meta | uniq)
 do
-    echo $group
+    echo -----------------------------------------------
+    echo Sample group: $group
     for sample in $(ls $input/$group)
     do
+        echo Sample ID: $sample
+        echo -----------------------------------------------
         run_folder=($input/$group/$sample/esATAC_pipeline/intermediate_results) ## the intermediate folder
         cp $run_folder/*.BedUtils.bed $input/util_beds
         file=$(basename $(ls $run_folder/*.sam))
         filename=${file%%.*}
-        samtools view -bSh $run_folder/*.sam | samtools sort -O bam -@ 60 -o $input/$bam_files/${filename}.sorted.bam ## covert sam to bam
+        echo samtools sort start
+        echo ${input}/bam_files/${filename}.sorted.bam
+        exit
+        samtools view -bSh $run_folder/*.sam | samtools sort -@ 60 -o ${input}/bam_files/${filename}.sorted.bam ## covert sam to bam
+        echo samtools sort done
+        echo -----------------------------------------------
     done
 done
 
@@ -64,7 +74,7 @@ sortBed -i $input/util_beds/union.bed > $input/util_beds/union_sorted.bed
 echo ">>>>>=========================================="
 echo Call peaks based on union BED file
 
-/home/yifei.wan/Tools/fseq/bin/fseq -o $input/peakcalling -of bed union_sorted.bed 
+/home/yifei.wan/Tools/fseq/bin/fseq -f 0 -o $input/peakcalling -of bed ${input}/util_beds/union_sorted.bed 
 cat $input/peakcalling/chr*.bed > $input/peakcalling/union_peaks.bed
 sortBed -i $input/peakcalling/union_peaks.bed > $input/peakcalling/union_peaks_sorted.bed 
 
@@ -76,7 +86,7 @@ awk -v OFS="\t" 'BEGIN {print "Gene", "Chr", "Start", "End", "Strand"} {print "P
 echo ">>>>>=========================================="
 echo Count reads on peaks
 
-/home/AH_Biopharma/ATACseq/pipeline/Feature_Count.sh $input/$bam_files $input/$peakcalling
+bash /home/AH_Biopharma/ATACseq/pipeline/Feature_Count.sh $input/$bam_files $input/$peakcalling
 bash /home/AH_Biopharma/ATACseq/pipeline/Count_format.sh $input/$peakcalling $input/count 
 
 echo ">>>>>=========================================="
