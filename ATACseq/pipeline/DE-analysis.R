@@ -23,7 +23,7 @@ suppressMessages(library("DESeq2") )
 suppressMessages(library(reshape2))
 suppressMessages(library(ggplot2))
 suppressMessages(library("pheatmap"))
-suppressMessages(library('xlsx'))
+#suppressMessages(library('xlsx'))
 suppressMessages(library('png'))
 suppressMessages(library("genefilter"))
 
