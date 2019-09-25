@@ -5,6 +5,7 @@ set -e
 
 input=$1 ## the esATAC run folder
 meta=$2
+ref=$3
 
 if [[ ! -d $input/bam_files ]]
 then
@@ -38,6 +39,14 @@ else
     echo The count folder exists.
 fi
 
+if [[ ! -d $input/DA_output ]]
+then
+    echo Make directory for DA!
+    mkdir $input/DA_output
+else
+    echo The DA folder exists.
+fi
+
 echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
 echo ">>>>>>>>>>>>> Downstream analysis <<<<<<<<<<<<<"
 echo "<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<"
@@ -56,11 +65,10 @@ do
         cp $run_folder/*.BedUtils.bed $input/util_beds
         file=$(basename $(ls $run_folder/*.sam))
         filename=${file%%.*}
-        echo samtools sort start
+        echo Samtools sort start
         echo ${input}/bam_files/${filename}.sorted.bam
-        exit
         samtools view -bSh $run_folder/*.sam | samtools sort -@ 60 -o ${input}/bam_files/${filename}.sorted.bam ## covert sam to bam
-        echo samtools sort done
+        echo Samtools sort done
         echo -----------------------------------------------
     done
 done
@@ -74,6 +82,7 @@ sortBed -i $input/util_beds/union.bed > $input/util_beds/union_sorted.bed
 echo ">>>>>=========================================="
 echo Call peaks based on union BED file
 
+## based on the default of esATAC, the fragmentSize is 0
 /home/yifei.wan/Tools/fseq/bin/fseq -f 0 -o $input/peakcalling -of bed ${input}/util_beds/union_sorted.bed 
 cat $input/peakcalling/chr*.bed > $input/peakcalling/union_peaks.bed
 sortBed -i $input/peakcalling/union_peaks.bed > $input/peakcalling/union_peaks_sorted.bed 
@@ -81,15 +90,15 @@ sortBed -i $input/peakcalling/union_peaks.bed > $input/peakcalling/union_peaks_s
 echo ">>>>>=========================================="
 echo Covert BED to SAF
 
-awk -v OFS="\t" 'BEGIN {print "Gene", "Chr", "Start", "End", "Strand"} {print "Peak_"NR, $1, $2+1, $3, "."}' $input/peakcalling/union_peaks_sorted.bed > $input/peakcalling/union.saf
+#awk -v OFS="\t" 'BEGIN {print "GeneID", "Chr", "Start", "End", "Strand"} {print "Peak_"NR, $1, $2+1, $3, "."}' $input/peakcalling/union_peaks_sorted.bed > $input/count/union.saf
 
 echo ">>>>>=========================================="
 echo Count reads on peaks
 
-bash /home/AH_Biopharma/ATACseq/pipeline/Feature_Count.sh $input/$bam_files $input/$peakcalling
-bash /home/AH_Biopharma/ATACseq/pipeline/Count_format.sh $input/$peakcalling $input/count 
+bash /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/Feature_Counts.sh ${input}/bam_files ${input}/count
+bash /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/Count_format.sh ${input}/count ${input}/count 
 
 echo ">>>>>=========================================="
 echo DA analysis
 
-##Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i $input/count -d $input/DA_output 
+Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i ${input}/count -m $meta -d ${input}/DA_output-r $ref 
