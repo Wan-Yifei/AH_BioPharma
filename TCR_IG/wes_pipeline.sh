@@ -5,6 +5,7 @@ set -e
 
 input=$1 ## the complete path of the folder of input fastq file
 output=$2 ## result
+ref=$3 ## reference genome type
 
 check_folder(){
     if [[ -d ${output}/${prefix} ]]
@@ -44,7 +45,7 @@ do
     cd ${output}/${prefix}
     echo ">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"
     # alignment
-    mixcr align -s hsa -OvParameters.geneFeatureToAlign=VGeneWithP -OallowPartialAlignments=true $fq $fq2 ${prefix}_alignments.vdjca | tee align_log.txt
+    mixcr align -s $ref -OvParameters.geneFeatureToAlign=VGeneWithP -OallowPartialAlignments=true $fq $fq2 ${prefix}_alignments.vdjca | tee align_log.txt
     # contig assembly twice
     mixcr assemblePartial ${prefix}_alignments.vdjca ${prefix}_alignments_rescued_1.vdjca | tee contig_assemble_log1.txt
     mixcr assemblePartial ${prefix}_alignments_rescued_1.vdjca ${prefix}_alignments_rescued_2.vdjca | tee contig_assemble_log2.txt
