@@ -101,4 +101,4 @@ bash /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/Count_format.sh ${input}/coun
 echo ">>>>>=========================================="
 echo DA analysis
 
-Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i ${input}/count -m $meta -d ${input}/DA_output-r $ref 
+Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i ${input}/count -m $meta -d ${input}/DA_output -r $ref 
