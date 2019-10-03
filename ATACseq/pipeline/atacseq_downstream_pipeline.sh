@@ -5,7 +5,8 @@ set -e
 
 input=$1 ## the esATAC run folder
 meta=$2
-ref=$3
+ref=$3 ## the name of control group [e.g "WT"]
+batch=$4 ## project ID
 
 if [[ ! -d $input/bam_files ]]
 then
@@ -90,7 +91,7 @@ sortBed -i $input/peakcalling/union_peaks.bed > $input/peakcalling/union_peaks_s
 echo ">>>>>=========================================="
 echo Covert BED to SAF
 
-#awk -v OFS="\t" 'BEGIN {print "GeneID", "Chr", "Start", "End", "Strand"} {print "Peak_"NR, $1, $2+1, $3, "."}' $input/peakcalling/union_peaks_sorted.bed > $input/count/union.saf
+awk -v OFS="\t" 'BEGIN {print "GeneID", "Chr", "Start", "End", "Strand"} {print "Peak_"NR, $1, $2+1, $3, "."}' $input/peakcalling/union_peaks_sorted.bed > $input/count/union.saf
 
 echo ">>>>>=========================================="
 echo Count reads on peaks
@@ -101,4 +102,4 @@ bash /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/Count_format.sh ${input}/coun
 echo ">>>>>=========================================="
 echo DA analysis
 
-Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis.R -i ${input}/count -m $meta -d ${input}/DA_output -r $ref 
+Rscript /home/yifei.wan/AH_BioPharma/ATACseq/pipeline/DE-analysis-06182019.R -i ${input}/count -p $batch -m $meta -d ${input}/DA_output -r $ref -c condition 
