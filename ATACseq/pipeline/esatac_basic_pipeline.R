@@ -63,14 +63,14 @@ for (i in 1:length(samples)){ ## column of FASTQ dataframe has sample order with
     sample_folder = make_folder(samples[i], group_folder) ## create the sub-folder for each sample
     #inter_folder = make_folder("internediate_result", sample_folder)
     setwd(sample_folder)
-    atacPipe(
-        fastqInput1 = file.path(input, samples_fastq[1, which(colnames(samples_fastq) == make.names(samples[i]))]), 
-        fastqInput2 = file.path(input, samples_fastq[2, which(colnames(samples_fastq) == make.names(samples[i]))]), 
-        refdir = ref_genome, 
-        #tmpdir = sample_folder,
-        threads = thread,
-        genome = ref_type 
-        )
+#    atacPipe(
+#        fastqInput1 = file.path(input, samples_fastq[1, which(colnames(samples_fastq) == make.names(samples[i]))]), 
+#        fastqInput2 = file.path(input, samples_fastq[2, which(colnames(samples_fastq) == make.names(samples[i]))]), 
+#        refdir = ref_genome, 
+#        #tmpdir = sample_folder,
+#        threads = thread,
+#        genome = ref_type 
+#        )
     }
 
     
