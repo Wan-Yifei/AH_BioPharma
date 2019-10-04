@@ -2,14 +2,14 @@
 
 # WGBS comparison
 
-# To do fix: processBismarkAln
 # Parse arguments
 suppressMessages(library("optparse"))
 
 optionList <- list(make_option(c("-i", "--input"), type="character", default=NULL, help="Folder of BAM"),
     make_option(c("-m", "--meta"), type="character", default=NULL, help="Meta text file"), 
-    make_option(c("-r", "--reference"), type="character", default=NULL, help="Reference genome [\"mm10\" or \"hg19\"]"),
+    make_option(c("-r", "--reference"), type="character", default=NULL, help="Reference genome [\"mm10\" or \"hg18\"]"),
     make_option(c("-n", "--negative"), type="character", default=NULL, help="Name of the control group [e.g. \"WT\"]"),
+    make_option(c("-c", "--context"),type="character",default=NULL,help="Type of the context [\"CpG\" or \"CHG\" or  \"CHH\"]"),
     make_option(c("-o", "--output"), type="character", default=NULL, help="Output folder"))
     
 opt_parser <- OptionParser(option_list=optionList)
@@ -30,7 +30,7 @@ conditions <- meta_table$Group
 # prepare BAM for each sample
 setwd(input)
 get_bam <- function(sample){
-    bam = list.files(pattern=paste(sample, ".*deduplicated.bam", sep=""), recursive=F)
+    bam = list.files(pattern=paste(sample, ".*deduplicated.sorted.bam$", sep=""), recursive=F)
     return(bam)
     }
 
@@ -39,40 +39,43 @@ attributes(samples_bams) <- NULL
 
 #print(samples_bams)
 dir.create(output)
-setwd(output)
+#setwd(output)
 
 # Parse the experiment design
 
 control <- opt$negative
 others <- unique(conditions)[which(unique(conditions) != control)]
 design <- as.numeric(factor(conditions, levels = c(control, others))) - 1
-#print(design)
+print(design)
 
 # Compare WGBS
 print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>")
 print(">>>>>>>>>>>>>>>  Start to run MethylKit  <<<<<<<<<<<<<<<<")
 print("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<")
 
-print(length(samples_bams))
-print(length(samples))
-print(length(design))
+#print(length(as.list(samples_bams)))
+#print(length(as.list(samples)))
+#print(length(as.list(design)))
 
+#quit()
 suppressMessages(library(methylKit))
 cat("\n")
 print("---------------------------------------------------------")
-print("1. Extract of CpG")
+print("1. Extract the CpG, CHG, CHH")
 
-my.methRaw_CpG = processBismarkAln(location = list(samples_bams),
-                         sample.id=list(samples), 
+my.methRaw_context = processBismarkAln(location = as.list(samples_bams),
+                         sample.id=as.list(samples), 
                          assembly=opt$reference,
                          treatment=design,
-                         read.context="CpG",
+                         read.context=opt$context,
                          save.folder= output)
+
+save.image("methRaw_context.RData")
 
 print("---------------------------------------------------------")
 print("2. Filter samples based on the read coverage and normalize")
 # filter samples based on the read coverage and normalize 
-filtered.myobj = filterByCoverage(my.methRaw_CpG,lo.count=10,lo.perc=NULL,
+filtered.myobj = filterByCoverage(my.methRaw_context,lo.count=10,lo.perc=NULL,
                                       hi.count=NULL,hi.perc=99.9)
 filtered.myobj = normalizeCoverage(filtered.myobj,method="median")
 
@@ -117,6 +120,7 @@ print("---------------------------------------------------------")
 print("8. Annotation")
 # Annotation
 supressMessage(library(genomation))
+source = paste("refseq.", opt$reference, ".bed.txt", sep="")
 gene.obj=readTranscriptFeatures(system.file("extdata", "refseq.mm10.bed.txt", package = "methylKit")) ## annotation source for mouse
 
 diffann = annotateWithGeneParts(as(myDiff,"GRanges"),gene.obj)
