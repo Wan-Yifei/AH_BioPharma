@@ -120,8 +120,8 @@ print("---------------------------------------------------------")
 print("8. Annotation")
 # Annotation
 supressMessage(library(genomation))
-source = paste("refseq.", opt$reference, ".bed.txt", sep="")
-gene.obj=readTranscriptFeatures(system.file("extdata", "refseq.mm10.bed.txt", package = "methylKit")) ## annotation source for mouse
+source_ref = paste("refseq.", opt$reference, ".bed.txt", sep="")
+gene.obj=readTranscriptFeatures(system.file("extdata", source_ref, package = "methylKit")) ## annotation source for mouse
 
 diffann = annotateWithGeneParts(as(myDiff,"GRanges"),gene.obj)
 
