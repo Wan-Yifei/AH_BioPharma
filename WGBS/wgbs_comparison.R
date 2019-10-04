@@ -119,7 +119,7 @@ saveRDS(myDiff, file = "myDiff_cpg.rds")
 print("---------------------------------------------------------")
 print("8. Annotation")
 # Annotation
-supressMessage(library(genomation))
+supressMessages(library(genomation))
 source_ref = paste("refseq.", opt$reference, ".bed.txt", sep="")
 gene.obj=readTranscriptFeatures(system.file("extdata", source_ref, package = "methylKit")) ## annotation source for mouse
 
